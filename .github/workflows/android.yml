@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Install build dependencies
+      - name: Install dependencies
         run: sudo apt update && sudo apt install -y ninja-build
 
       - name: Set up Java
@@ -25,13 +25,18 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: Make build script executable
+      - name: Install Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r25c
+
+      - name: Make script executable
         run: chmod +x scripts/android-gms.sh
 
       - name: Run Android GMS script
         run: ./scripts/android-gms.sh -g gearbox
 
-      - name: List contents to verify build script worked
+      - name: Check build directory
         run: ls -la build-android
 
       - name: Build APK
@@ -39,7 +44,7 @@ jobs:
           cd build-android
           ./gradlew assembleRelease
 
-      - name: Upload built APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: xash3d-opfor-apk
